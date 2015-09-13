@@ -1,0 +1,22 @@
+{
+    "name": "cherif/yii2-tactician",
+    "description": "Yii2 component for Tactician command bus library",
+    "type": "yii2-extension",
+    "keywords": ["yii2","extension","tactician","command","cqs"],
+    "license": "BSD-3-Clause",
+    "authors": [
+        {
+            "name": "Cherif BOUCHELAGHEM",
+            "email": "cherif.bouchelaghem@gmail.com"
+        }
+    ],
+    "require": {
+        "yiisoft/yii2": "*",
+        "league/tactician": "^0.6.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "cherif\\tactician\\": ""
+        }
+    }
+}
