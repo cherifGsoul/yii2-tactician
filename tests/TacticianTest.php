@@ -21,8 +21,7 @@ class TacticianTests extends TestCase
 	 * @test
 	 */
 	public function should_handle_command()
-	{
-		
+	{	
 		$this->assertEquals(
             'foobar',
             $this->_commandBus->handle(new CompleteTaskCommand())
@@ -34,26 +33,16 @@ class TacticianTests extends TestCase
 	 */
 	public function should_register_middleware_to_be_executed()
 	{
-		$middleware = $this->getMock(Middleware::class,array('execute'));
-
-
-		$middleware->expects($this->any())
-					->method('execute')
-					->will($this->returnValue('Heelo'));
+		$middleware = $this->getMock('League\Tactician\Middleware');
 					
 		$this->_commandBus->registerMiddleware($middleware);
-
-		$tactician = $this->_commandBus->getTactician();
 		
+		$this->assertEquals(2,count($this->_commandBus->middlewares));
+	
 		$this->assertEquals(
             'foobar',
             $this->_commandBus->handle(new CompleteTaskCommand())
         );
-
-		$this->assertEquals(
-            'foobar',
-            $tactician->handle(new CompleteTaskCommand())
-        );	
 	}
 
 
