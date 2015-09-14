@@ -5,69 +5,66 @@ use Yii;
 use cherif\tactician\tests\fixtures\commands\CompleteTaskCommand;
 use cherif\tactician\tests\fixtures\commands\DeleteTaskCommand;
 
+use League\Tactician\Middleware;
+
 class TacticianTests extends TestCase
 {
-	/**
-	 * @test
-	 */
-	public function should_return_tactician_component()
+	private $_commandBus;
+
+	protected function setUp()
 	{
-		$this->assertInstanceOf('cherif\tactician\Tactician',Yii::$app->tactician);
+		parent::setUp();
+		$this->_commandBus = Yii::$app->commandBus;
 	}
 
 	/**
 	 * @test
 	 */
-	public function should_return_instance_of_container_locator()
-	{
-		$containerLocator = Yii::$container->get('League\Tactician\Handler\Locator\HandlerLocator');
-		$extractor = Yii::$container->get('League\Tactician\Handler\CommandNameExtractor\CommandNameExtractor');
-		$inflector = Yii::$container->get('League\Tactician\Handler\MethodNameInflector\MethodNameInflector');
-
-		
-		$this->assertInstanceOf('cherif\tactician\containerLocator',$containerLocator);
-		$this->assertInstanceOf('League\Tactician\Handler\CommandNameExtractor\CommandNameExtractor',$extractor);
-		$this->assertInstanceOf('League\Tactician\Handler\MethodNameInflector\MethodNameInflector',$inflector);
-	}
-
-	/**
-	 * @test
-	 */
-
-	public function should_return_insrance_of_command_bus()
-	{
-		$commandBus = Yii::$container->get('commandBus');
-		$this->assertInstanceOf('League\Tactician\CommandBus',$commandBus);
-	}
-
-	/**
-	 * @test
-	 */
-
 	public function should_handle_command()
 	{
-		$commandBusComponent = Yii::$app->tactician;
-		$commandBusContainer = Yii::$container->get('commandBus');
+		
 		$this->assertEquals(
             'foobar',
-            $commandBusComponent->handle(new CompleteTaskCommand())
+            $this->_commandBus->handle(new CompleteTaskCommand())
+        );
+	}
+
+	/**
+	 * @test
+	 */
+	public function should_register_middleware_to_be_executed()
+	{
+		$middleware = $this->getMock(Middleware::class,array('execute'));
+
+
+		$middleware->expects($this->any())
+					->method('execute')
+					->will($this->returnValue('Heelo'));
+					
+		$this->_commandBus->registerMiddleware($middleware);
+
+		$tactician = $this->_commandBus->getTactician();
+		
+		$this->assertEquals(
+            'foobar',
+            $this->_commandBus->handle(new CompleteTaskCommand())
         );
 
-        $this->assertEquals('foobar',
-        	$commandBusContainer->handle(new CompleteTaskCommand())
-        	);
+		$this->assertEquals(
+            'foobar',
+            $tactician->handle(new CompleteTaskCommand())
+        );	
 	}
 
 
 	/**
-	 * @test
+	 * @test 
 	 * @expectedException League\Tactician\Exception\MissingHandlerException
 	 */
 
 	public function should_throw_exception_on_missing_handler()
 	{
-		$commandBus = Yii::$container->get('commandBus');
-		$commandBus->handle(new DeleteTaskCommand());
+		$this->_commandBus->handle(new DeleteTaskCommand());
 	}
 
 }
