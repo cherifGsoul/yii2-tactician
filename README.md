@@ -28,8 +28,6 @@ In the configuration file the component must be in the application bootstrap con
 
 ```php
 ...
-'bootstrap'=>[...,'commandBus'],
-...
 'components'=>[
 ...
 				'commandBus'=> [
@@ -38,8 +36,7 @@ In the configuration file the component must be in the application bootstrap con
 					'extractor' => 'League\Tactician\Handler\CommandNameExtractor\ClassNameExtractor',
 					'commandHandlerMap'=> [
 						'cherif\tactician\tests\fixtures\commands\CompleteTaskCommand' => 'cherif\tactician\tests\fixtures\handlers\CompleteTaskCommandHandler',
-					],
-					'middlewares'=> [],
+					]
 				]
 			]
 ```
@@ -48,6 +45,17 @@ Somewhere in your app (maybe controller):
 
 ```php
 	Yii:$app->commandBus->handle(new CompleteTaskCommand)
+```
+
+You can add additional middlewares before handling a command like this: 
+
+```php
+$middleware = new MiddlewareClass();
+$command = new MyCommand();
+
+Yii::$app->commandBus->registerMiddleware($middleware);
+
+Yii::$app->commandBus->handle($command);
 ```
 
 For more information about configuration please visit [Tactician library homepage](http://tactician.thephpleague.com/).

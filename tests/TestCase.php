@@ -27,24 +27,26 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
 	protected function mockApplication($config = null)
 	{
 		Yii::$container = new Container;
-		$config = [
-			'id'=>'unit',
-			'class'=>'\yii\console\Application',
-			'bootstrap'=>['tactician'],
-			'name'=>'Tactician Yii2 container unit tests',
-			'basePath'=>__DIR__,
-			'components'=>[
-				'tactician'=> [
-					'class'=>'cherif\tactician\Tactician',
-					'inflector' => 'League\Tactician\Handler\MethodNameInflector\HandleClassNameInflector',
-					'extractor' => 'League\Tactician\Handler\CommandNameExtractor\ClassNameExtractor',
-					'commandHandlerMap'=> [
-						'cherif\tactician\tests\fixtures\commands\CompleteTaskCommand' => 'cherif\tactician\tests\fixtures\handlers\CompleteTaskCommandHandler',
-					],
-					'middlewares'=> [],
+		if( $config === null )
+		{
+			$config = [
+				'id'=>'unit',
+				'name'=>'Tactician Yii2 container unit tests',
+				'basePath'=>__DIR__,
+				'components'=>[
+					'commandBus'=> [
+						'class'=>'cherif\tactician\Tactician',
+						'inflector' => 'League\Tactician\Handler\MethodNameInflector\HandleClassNameInflector',
+						'extractor' => 'League\Tactician\Handler\CommandNameExtractor\ClassNameExtractor',
+						'commandHandlerMap'=> [
+							'cherif\tactician\tests\fixtures\commands\CompleteTaskCommand' => 'cherif\tactician\tests\fixtures\handlers\CompleteTaskCommandHandler'
+						]
+					]
 				]
-			]
-		];
+			];
+		}
+
+		$config['class'] = 'yii\console\Application';
 
 		Yii::createObject($config);
 	}
