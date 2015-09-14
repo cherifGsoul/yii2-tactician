@@ -41,10 +41,6 @@ class Tactician extends Component
 
 		$this->registerMiddleware($handlerMiddleware);
 
-		$this->tactician =  Yii::createObject('League\Tactician\CommandBus',[
-				$this->middlewares
-			]
-		);
 	}
 
 
@@ -57,7 +53,12 @@ class Tactician extends Component
 	public function handle( $command )
 	{
 		Yii::trace(sprintf('Handle command class for %s',  get_class( $command ) ) );
-		return $this->tactician->handle( $command );
+		
+		$tactician =  Yii::createObject('League\Tactician\CommandBus',[
+				$this->middlewares
+			]
+		);
+		return $tactician->handle( $command );
 	}
 	
 	public function getMiddlewares()
